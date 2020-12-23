@@ -33,10 +33,16 @@ $("#distance-form input:radio").click(function() {
     update_circle()
 });
 
+$( "#distance" ).click(function() {
+    $("#distance").val(null);
+});
+
+
+
 function update_circle() {
 
     var distance = $( "#distance" ).val();
-    var is_km = $( "input[type=radio][name=switch-one]:checked" ).val();
+    var is_km = $( "input[type=radio][name=switch]:checked" ).val();
     
     if (is_km == "km" ) {
         distance=distance*1000
@@ -45,15 +51,17 @@ function update_circle() {
     }
 
     if (circle != undefined) {
-        map.removeLayer(circle);
+        circle.remove();
     };
 
-    circle = L.circle([pos.lat, pos.lng], {
+    circle = L.greatCircle([pos.lat, pos.lng], {
         color: 'red',
         fillColor: '#f03',
         fillOpacity: 0.5,
         radius: distance
-    }).addTo(map);
+    });
+
+    circle.addTo(map);
 
     map.fitBounds(circle.getBounds())
 
@@ -64,6 +72,7 @@ map.on('click', function(e) {
    //alert("Lat, Lon : " + e.latlng.lat + ", " + e.latlng.lng)
    map.panTo(pos);
    update_circle();
+   map.fitBounds(circle.getBounds())
 });
 
 
@@ -71,6 +80,7 @@ function onLocationFound(e) {
     pos = e.latlng
     map.panTo(pos);
     update_circle();
+    map.fitBounds(circle.getBounds())
 }
 
 map.on('locationfound', onLocationFound);
